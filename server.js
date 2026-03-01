@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const XLSX = require("xlsx");
 const fs = require("fs");
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -39,6 +40,15 @@ app.post("/submit", (req, res) => {
   XLSX.writeFile(workbook, filePath);
 
   res.json({ message: "Form submitted successfully!" });
+});
+
+// Download route - visit this URL in your browser to get the Excel file
+app.get("/download", (req, res) => {
+  if (fs.existsSync(filePath)) {
+    res.download(path.resolve(filePath), "contacts.xlsx");
+  } else {
+    res.status(404).json({ message: "No submissions yet." });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
